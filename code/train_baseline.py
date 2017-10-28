@@ -62,7 +62,7 @@ language_set = {'afr': '../data/afr/improved_afr.txt',
                 'ven': '../data/ven/improved_ven.txt',
                 'tso': '../data/tso/improved_tso.txt'}
 
-training_samples = 2000
+training_samples = 3000
 testing_samples = 1000
 
 min_requested_sent_length = 300  # value used to truncate the text samples.
@@ -74,8 +74,8 @@ min_requested_sent_length = 300  # value used to truncate the text samples.
 # text_clsfr_name = "lid_za_clean_200_2k"  # 0.9997
 # text_clsfr_name = "lid_za_clean_200_3k"  # 0.9996
 # text_clsfr_name = "lid_za_clean_240_1k"  # 0.9998
-text_clsfr_name = "lid_za_clean_240_2k"  # 0.???
-# text_clsfr_name = "lid_za_clean_240_3k"  # 0.???
+# text_clsfr_name = "lid_za_clean_240_2k"  # 1.0000
+text_clsfr_name = "lid_za_clean_240_3k"  # 0.???
 
 
 sent_list_train, sent_list_test, lang_token_dict = text_classifier.load_sentences_all(language_set,

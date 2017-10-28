@@ -436,7 +436,8 @@ def load_sentences_all(language_set: Dict[str, str],
     :param min_requested_length: The minimum requested sentence length.
     :param training_samples: The number of training samples PER LANGUAGE.
     :param testing_samples: The number of testing samples PER LANGUAGE.
-    :return: The shuffled labelled training and testing sets over all languages (text, label)
+    :return: The shuffled labelled training and testing sets over all languages (text, label) and the language
+    lexicon (word vs. count)
     """
 
     sent_list_train = []  # type: List[Tuple[str, str]]

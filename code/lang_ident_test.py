@@ -1,5 +1,5 @@
 import time
-from typing import List, Tuple, Dict  # noqa # pylint: disable=unused-import
+from typing import List, Tuple, Dict, Set  # noqa # pylint: disable=unused-import
 
 import text_classifier
 
@@ -123,6 +123,37 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
 
 
 # ==========================
+def find_unique(lang_token_dict: Dict[str, Dict[str, int]],
+                target_lang: str,
+                neighbours: Set[str]) -> Set[str]:
+    """
+    Find the unique set of words in lang that are not in the neighbours.
+    :param lang_token_dict: Language lexicon (word vs. count for each language.)
+    :param target_lang: The language to analyse.
+    :param neighbours: The neighbouring languages to compare against.
+    :return: The set of unique words in lang.
+    """
+
+    target_lex = lang_token_dict.get(target_lang, None)
+    unique_set = set()  # type: Set[str]
+
+    if target_lex is not None:
+        for target_token in target_lex:
+            neighbour_count = 0
+
+            for neighbour_lang in neighbours:
+                neighbour_lex = lang_token_dict.get(neighbour_lang, None)
+
+                if (neighbour_lex is not None) and (target_token in neighbour_lex):
+                    neighbour_count += 1
+
+            if neighbour_count == 0:
+                unique_set.add(target_token)
+
+    return unique_set
+
+
+# ==========================
 print("Loading the text corpora...")
 start_time = time.time()
 language_set = {'afr': '../data/afr/improved_afr.txt',
@@ -140,15 +171,15 @@ language_set = {'afr': '../data/afr/improved_afr.txt',
 training_samples = 3000
 testing_samples = 1000
 
-min_requested_sent_length = 300  # value used to truncate the text samples.
+min_requested_sent_length = 15  # value used to truncate the text samples.
 
 sent_list_train, sent_list_test, lang_token_dict = text_classifier.load_sentences_all(language_set,
                                                                                       min_requested_sent_length,
                                                                                       training_samples,
                                                                                       testing_samples)
 
-text_classifier.save_samples_csv(sent_list_train, 'train_full_3k')
-text_classifier.save_samples_csv(sent_list_test, 'test_full_1k')
+# text_classifier.save_samples_csv(sent_list_train, 'train_full_3k')
+# text_classifier.save_samples_csv(sent_list_test, 'test_full_1k')
 # text_classifier.save_samples_csv(sent_list_test, 'test_15_1k')
 
 end_time = time.time()
@@ -161,6 +192,20 @@ for text, label in sent_list_train:
 avrg_sentence_length /= len(sent_list_train)
 print('avrg_sentence_length =', avrg_sentence_length)
 print()
+
+
+# ==========================
+print("Analysing the lexicons ... ")
+start_time = time.time()
+unique_zul = find_unique(lang_token_dict, 'zul', {'xho', 'ssw', 'nbl'})
+unique_xho = find_unique(lang_token_dict, 'xho', {'xul', 'ssw', 'nbl'})
+unique_nso = find_unique(lang_token_dict, 'nso', {'sot', 'tsn'})
+
+print("unique_zul: ", unique_zul)
+print("unique_xho: ", unique_xho)
+print("unique_nso: ", unique_nso)
+end_time = time.time()
+print('done. time = ' + str(end_time - start_time) + 's.')
 
 
 # ==========================

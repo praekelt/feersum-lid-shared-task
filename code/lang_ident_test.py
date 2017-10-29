@@ -154,6 +154,30 @@ def find_unique(lang_token_dict: Dict[str, Dict[str, int]],
 
 
 # ==========================
+def find_common(lang_token_dict: Dict[str, Dict[str, int]],
+                languages: Set[str]) -> Set[str]:
+    """
+    Find the unique set of words in lang that are not in the neighbours.
+    :param lang_token_dict: Language lexicon (word vs. count for each language.)
+    :param languages: The language to analyse.
+    :return: The set of common words between languages.
+    """
+
+    common_tokens = None
+
+    for lang in languages:
+        token_dict = lang_token_dict.get(lang)
+
+        if token_dict is not None:
+            if common_tokens is None:
+                common_tokens = set(token_dict.keys())  # type: Set[str]
+            else:
+                common_tokens.intersection_update(set(token_dict.keys()))
+
+    return common_tokens
+
+
+# ==========================
 print("Loading the text corpora...")
 start_time = time.time()
 language_set = {'afr': '../data/afr/improved_afr.txt',
@@ -186,32 +210,54 @@ end_time = time.time()
 print('Data loading time = ' + str(end_time - start_time) + 's.')
 print()
 
-avrg_sentence_length = 0.0
-for text, label in sent_list_train:
-    avrg_sentence_length += len(text)
-avrg_sentence_length /= len(sent_list_train)
-print('avrg_sentence_length =', avrg_sentence_length)
-print()
-
 
 # ==========================
 print("Analysing the lexicons ... ")
 start_time = time.time()
+full_zul = find_unique(lang_token_dict, 'zul', set())
+full_xho = find_unique(lang_token_dict, 'xho', set())
+full_ssw = find_unique(lang_token_dict, 'ssw', set())
+full_nbl = find_unique(lang_token_dict, 'nbl', set())
 unique_zul = find_unique(lang_token_dict, 'zul', {'xho', 'ssw', 'nbl'})
-unique_xho = find_unique(lang_token_dict, 'xho', {'xul', 'ssw', 'nbl'})
-unique_nso = find_unique(lang_token_dict, 'nso', {'sot', 'tsn'})
+unique_xho = find_unique(lang_token_dict, 'xho', {'zul', 'ssw', 'nbl'})
+unique_ssw = find_unique(lang_token_dict, 'ssw', {'xho', 'zul', 'nbl'})
+unique_nbl = find_unique(lang_token_dict, 'nbl', {'xho', 'zul', 'ssw'})
+common_nguni = find_common(lang_token_dict, {'nbl', 'xho', 'zul', 'ssw'})
 
-print("unique_zul: ", unique_zul)
-print("unique_xho: ", unique_xho)
-print("unique_nso: ", unique_nso)
+full_nso = find_unique(lang_token_dict, 'nso', set())
+full_sot = find_unique(lang_token_dict, 'sot', set())
+full_tsn = find_unique(lang_token_dict, 'tsn', set())
+unique_nso = find_unique(lang_token_dict, 'nso', {'sot', 'tsn'})
+unique_sot = find_unique(lang_token_dict, 'sot', {'nso', 'tsn'})
+unique_tsn = find_unique(lang_token_dict, 'tsn', {'nso', 'sot'})
+common_sotho_tswana = find_common(lang_token_dict, {'nso', 'sot', 'tsn'})
+
+print("full_zul({0}):".format(len(full_zul)), full_zul)
+print("full_xho({0}):".format(len(full_xho)), full_xho)
+print("full_ssw({0}):".format(len(full_ssw)), full_ssw)
+print("full_nbl({0}):".format(len(full_nbl)), full_nbl)
+print("unique_zul({0}):".format(len(unique_zul)), unique_zul)
+print("unique_xho({0}):".format(len(unique_xho)), unique_xho)
+print("unique_ssw({0}):".format(len(unique_ssw)), unique_ssw)
+print("unique_nbl({0}):".format(len(unique_nbl)), unique_nbl)
+print("common_nguni({0}):".format(len(common_nguni)), common_nguni)
+print()
+print("full_nso({0}):".format(len(full_nso)), full_nso)
+print("full_sot({0}):".format(len(full_sot)), full_sot)
+print("full_tsn({0}):".format(len(full_tsn)), full_tsn)
+print("unique_nso({0}):".format(len(unique_nso)), unique_nso)
+print("unique_sot({0}):".format(len(unique_sot)), unique_sot)
+print("unique_tsn({0}):".format(len(unique_tsn)), unique_tsn)
+print("common_sotho_tswana({0}):".format(len(common_sotho_tswana)), common_sotho_tswana)
+print()
 end_time = time.time()
 print('done. time = ' + str(end_time - start_time) + 's.')
 
 
 # ==========================
-print("Loading the NB LID classifier ... ")
+text_clsfr_name = 'lid_za_clean_240_4k'
+print("Loading the NB LID classifier", text_clsfr_name, "... ")
 start_time = time.time()
-text_clsfr_name = 'lid_za_clean_200_3k'
 
 feat_clsfr = text_classifier.load_text_clsfr(text_clsfr_name)
 print("load_result =", (feat_clsfr is not None))

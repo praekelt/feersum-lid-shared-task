@@ -75,7 +75,8 @@ min_requested_sent_length = 300  # value used to truncate the text samples.
 # text_clsfr_name = "lid_za_clean_200_3k"  # 0.9996
 # text_clsfr_name = "lid_za_clean_240_1k"  # 0.9998
 # text_clsfr_name = "lid_za_clean_240_2k"  # 1.0000
-text_clsfr_name = "lid_za_clean_240_3k"  # 0.???
+text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
+# text_clsfr_name = "lid_za_clean_240_4k"  # 1.0
 
 
 sent_list_train, sent_list_test, lang_token_dict = text_classifier.load_sentences_all(language_set,
@@ -88,13 +89,6 @@ sent_list_train, sent_list_test, lang_token_dict = text_classifier.load_sentence
 
 end_time = time.time()
 print('Data loading time = ' + str(end_time - start_time) + 's.')
-print()
-
-avrg_sentence_length = 0.0
-for text, label in sent_list_train:
-    avrg_sentence_length += len(text)
-avrg_sentence_length /= len(sent_list_train)
-print('avrg_length =', avrg_sentence_length)
 print()
 
 

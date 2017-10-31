@@ -5,6 +5,7 @@ published at the Prasa/RobMech 2017 conference.
 The paper is on text language identification of short pieces of text of around 15 characters. Hopefully this repo will be useful to create a text language
 identification shared task for South African languages. Example training and testing data used in this paper is in the folder lid_task_2017a.
 
+## The Paper
 Please cite our paper or attribute the use of the data to:
 
 B. Duvenhage, M Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium

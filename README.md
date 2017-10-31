@@ -8,7 +8,7 @@ identification shared task for South African languages. Example training and tes
 ## The Paper
 Please cite our paper or attribute the use of the data to:
 
-B. Duvenhage, M Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium
+B. Duvenhage, M. Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium
 of the Pattern Recognition Association of South Africa, 2017.
 
 ## The Data

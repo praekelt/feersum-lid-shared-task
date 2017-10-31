@@ -6,6 +6,7 @@ The paper is on text language identification of short pieces of text of around 1
 identification shared task for South African languages. Example training and testing data used in this paper is in the folder lid_task_2017a.
 
 Please cite our paper or attribute the use of the data to:
+
 B. Duvenhage, M Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium
 of the Pattern Recognition Association of South Africa, 2017.
 

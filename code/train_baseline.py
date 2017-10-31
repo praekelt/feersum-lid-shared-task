@@ -62,11 +62,15 @@ language_set = {'afr': '../data/afr/improved_afr.txt',
                 'ven': '../data/ven/improved_ven.txt',
                 'tso': '../data/tso/improved_tso.txt'}
 
-training_samples = 4000
-testing_samples = 100
+training_samples = 3000
+testing_samples = 1000
 
 min_requested_sent_length = 300  # value used to truncate the text samples.
 
+# ===
+# Note: Clsfr name convention for baseline long sentence trained classifier is:
+# lid_za_clean_240_3k typically implies training samples of avrg 240 chars in length and 3k=3000 samples per language!
+# ===
 # text_clsfr_name = "lid_za_clean_100_1k"  # 0.9959
 # text_clsfr_name = "lid_za_clean_100_2k"  # 0.9972
 # text_clsfr_name = "lid_za_clean_100_3k"  # 0.9971
@@ -75,11 +79,11 @@ min_requested_sent_length = 300  # value used to truncate the text samples.
 # text_clsfr_name = "lid_za_clean_200_3k"  # 0.9996
 # text_clsfr_name = "lid_za_clean_240_1k"  # 0.9998
 # text_clsfr_name = "lid_za_clean_240_2k"  # 1.0000
-# text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
+text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
 # text_clsfr_name = "lid_za_clean_240_4k"  # 1.0
 
 # text_clsfr_name = "lid_za_clean_240_4k_4gram"
-text_clsfr_name = "lid_za_clean_240_4k_6gram"
+# text_clsfr_name = "lid_za_clean_240_4k_6gram"
 
 
 sent_list_train, sent_list_test, lang_token_dict = text_classifier.load_sentences_all(language_set,
@@ -99,8 +103,8 @@ print()
 print("Training the text classifier", text_clsfr_name, "...")
 start_time = time.time()
 
-# feat_clsfr = text_classifier.train_text_clsfr(sent_list_train, 'CHAR_5GRAMS')
-feat_clsfr = text_classifier.train_text_clsfr(sent_list_train, 'CHAR_6GRAMS')
+feat_clsfr = text_classifier.train_text_clsfr(sent_list_train, 'CHAR_5GRAMS')
+# feat_clsfr = text_classifier.train_text_clsfr(sent_list_train, 'CHAR_6GRAMS')
 
 end_time = time.time()
 save_result = text_classifier.save_text_clsfr(feat_clsfr, text_clsfr_name)

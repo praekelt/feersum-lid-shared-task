@@ -255,7 +255,7 @@ print('done. time = ' + str(end_time - start_time) + 's.')
 
 
 # ==========================
-text_clsfr_name = 'lid_za_clean_240_4k'
+text_clsfr_name = 'lid_za_clean_240_4k_6gram'
 print("Loading the NB LID classifier", text_clsfr_name, "... ")
 start_time = time.time()
 

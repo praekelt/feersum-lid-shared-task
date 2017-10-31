@@ -5,6 +5,10 @@ published at the Prasa/RobMech 2017 conference.
 The paper is on text language identification of short pieces of text of around 15 characters. Hopefully this repo will be useful to create a text language
 identification shared task for South African languages. Example training and testing data used in this paper is in the folder lid_task_2017a.
 
+Please cite our paper or attribute the use of the data to:
+B. Duvenhage, M Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium
+of the Pattern Recognition Association of South Africa, 2017.
+
 ## The Data
 The data is from the NHCLT Text Corpera collected by South African Department of Arts and Culture & Centre for Text Technology (CTexT,
 North-West University, South Africa). Each folder in the data contains the original and improved text corpera for a single language.

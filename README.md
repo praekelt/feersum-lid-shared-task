@@ -31,41 +31,41 @@ train_baseline.py is required to train the baseline Naive Bayesian LID classifie
 
 lang_ident_test.py is used to test the baseline and baseline+lexicon LID. The lexicon is derived from the improved NHCLT Text Corpera.
 
-### If you are new to python then you can do the following to get started:
-git clone https://github.com/praekelt/feersum-lid-shared-task.git
+### If you are new to python then you can do the following from a terminal to get started:
+`git clone https://github.com/praekelt/feersum-lid-shared-task.git`
 
-cd feersum-lid-shared-task
+`cd feersum-lid-shared-task`
 
-virtualenv -p /usr/local/bin/python3.5 .pyenv
-(alternatively use python3.6)
+`virtualenv -p /usr/local/bin/python3.5 .pyenv`
+ (alternatively use python3.6)
 
-source .pyenv/bin/activate
+`source .pyenv/bin/activate`
 
-pip install pip-tools
+`pip install pip-tools`
 
-pip install appdirs
+`pip install appdirs`
 
-pip install sklearn
+`pip install sklearn`
 
-pip install numpy
+`pip install numpy`
 
-pip install scipy
+`pip install scipy`
 
 ### If you don't have virtualenv installed first run:
-$ pip install virtualenv
+`pip install virtualenv`
 
-$ sudo /usr/bin/easy_install virtualenv
+`sudo /usr/bin/easy_install virtualenv`
 
 ### If you don't have pip or python:
 First install Python 3.5 or 3.6.
 
 ### To run the code to train the baseline classifier:
-cd code
+`cd code`
 
-python train_baseline.py
+`python train_baseline.py`
 
 ### To test LID of 15 char strings with the lexicon:
-python lang_ident_test.py
+`python lang_ident_test.py`
 
 
 

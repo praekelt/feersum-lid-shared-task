@@ -11,6 +11,8 @@ Please cite our paper or attribute the use of the data to:
 B. Duvenhage, M. Ntini and P. Ramonyai, "Improved Text Language Identification for the South African Languages," The 28th Annual Symposium
 of the Pattern Recognition Association of South Africa, 2017.
 
+A preprint of the paper is available at https://arxiv.org/abs/1711.00247
+
 ## The Data
 The data is from the NHCLT Text Corpera collected by South African Department of Arts and Culture & Centre for Text Technology (CTexT,
 North-West University, South Africa). Each folder in the data contains the original and improved text corpera for a single language.

@@ -33,18 +33,27 @@ lang_ident_test.py is used to test the baseline and baseline+lexicon LID. The le
 
 ### If you are new to python then you can do the following to get started:
 git clone https://github.com/praekelt/feersum-lid-shared-task.git
+
 cd feersum-lid-shared-task
+
 virtualenv -p /usr/local/bin/python3.5 .pyenv
 (alternatively use python3.6)
+
 source .pyenv/bin/activate
+
 pip install pip-tools
+
 pip install appdirs
+
 pip install sklearn
+
 pip install numpy
+
 pip install scipy
 
 ### If you don't have virtualenv installed first run:
 $ pip install virtualenv
+
 $ sudo /usr/bin/easy_install virtualenv
 
 ### If you don't have pip or python:
@@ -52,6 +61,7 @@ First install Python 3.5 or 3.6.
 
 ### To run the code to train the baseline classifier:
 cd code
+
 python train_baseline.py
 
 ### To test LID of 15 char strings with the lexicon:

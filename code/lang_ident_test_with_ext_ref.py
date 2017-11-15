@@ -1,7 +1,92 @@
 import time
 from typing import List, Tuple, Dict, Set  # noqa # pylint: disable=unused-import
+import requests
+import urllib.parse as urllib_parse
 
 import text_classifier
+
+
+# ==========================
+def retrieve_language_ext(service: str, input_text: str) -> List[Tuple[str, float]]:  # (lang_code, score)
+    """ Retrieve the language the input text is written in using an external reference API.
+
+    :param service: The http service to use.
+    :param input_text: Document/Sentence to analyse.
+    :return: A list of probable ISO-639-1 language codes sorted from high to low probability.
+    """
+    result_list = []  # type: List[Tuple[str, float]]
+    # print("retrieve_language_ext: ", service, input_text)
+
+    if input_text is not None and len(input_text) > 0:
+        lang_to_iso_map = {"afrikaans": "afr",
+                           "english": "eng",
+                           "isindebele": "nbl",
+                           "isixhosa": "xho",
+                           "isizulu": "zul",
+                           "sepedi": "nso",
+                           "sesotho": "sot",
+                           "setswana": "tsn",
+                           "siswati": "ssw",
+                           "tshivenda": "ven",
+                           "xitsonga": "tso"}
+
+        try:
+            r = requests.get(service +
+                             "?%27" + urllib_parse.quote(input_text) + "%27")  # ,timeout=1.0)
+
+            iso_lang_code = lang_to_iso_map.get(r.content.decode('utf-8').strip().lower())
+
+            if iso_lang_code is None:
+                iso_lang_code = "eng"
+
+            result_list.append((iso_lang_code, 1.0))
+        except requests.exceptions.RequestException:
+            print("retrieve_language_ext exception!")
+
+    return result_list
+
+
+# ==========================
+def add_predicted_lang_labels_ext(service: str,
+                                  sent_list: List[Tuple[str, str]]) -> List[Tuple[str, str, List[str]]]:
+    """
+    Add the predicted language labels to the sentences.
+
+    :param service: The http service to use.
+    :param sent_list: The list of sentences labelled with only the truth.
+    :return: The list of sentences labelled with the truth and the predicted label.
+    """
+    sent_list_len = len(sent_list)
+    sentence_num = 0
+
+    sent_list_pred_ext = []  # type: List[Tuple[str, str, List[str]]]
+    correct_ext = 0
+
+    for sentence, truth in sent_list:
+        prediction_ext = retrieve_language_ext(service, sentence)
+
+        if len(prediction_ext) > 0:
+            prediction = prediction_ext[0][0]
+        else:
+            prediction = 'no_response'
+
+        sent_list_pred_ext.append((sentence, truth, [prediction]))
+
+        if prediction == truth:
+            correct_ext += 1
+
+        sentence_num += 1
+
+        if truth != prediction:
+            print(truth, prediction, sentence, flush=True)
+            print()
+
+        if (sentence_num % int(sent_list_len / 500)) == 0:
+            print(str(round(sentence_num / float(sent_list_len) * 100.0, 2)) + " ", flush=True)
+            print("acc =", correct_ext / float(sentence_num))
+            print()
+
+    return sent_list_pred_ext
 
 
 # ==========================
@@ -276,6 +361,16 @@ end_time = time.time()
 print('done. Testing time = ' + str(end_time - start_time) + 's.')
 print()
 
+# ==========================
+print("Running LID_ext on test data ... ")
+start_time = time.time()
+sent_list_pred_ext = add_predicted_lang_labels_ext("http://your.lid.service/lid.cgi",
+                                                   sent_list_test)
+end_time = time.time()
+print('done. Testing time = ' + str(end_time - start_time) + 's.')
+print()
+
+
 lang_to_family_dict = {'afr': 'germanic',
                        'eng': 'germanic',
                        'zul': 'nguni',
@@ -295,6 +390,7 @@ start_time = time.time()
 
 lang_result_list = []  # type: List[Tuple[str, str, List[str]]]
 lang_result_list_cmb = []  # type: List[Tuple[str, str, List[str]]]
+lang_result_list_ext = []  # type: List[Tuple[str, str, List[str]]]
 
 fam_result_list = []  # type: List[Tuple[str, str, List[str]]]
 fam_result_list_cmb = []  # type: List[Tuple[str, str, List[str]]]
@@ -306,6 +402,9 @@ for sentence, truth, pred_list in sent_list_pred:
 for sentence, truth, pred_list in sent_list_pred_cmb:
     lang_result_list_cmb.append((sentence, truth, pred_list))
     fam_result_list_cmb.append((sentence, lang_to_family_dict[truth], [lang_to_family_dict[pred_list[0]]]))
+
+for sentence, truth, pred_list in sent_list_pred_ext:
+    lang_result_list_ext.append((sentence, truth, pred_list))
 
 lang_acc, lang_f1, lang_confusion_dict = text_classifier.analyse_clsfr_results(lang_result_list)
 print("lang_acc, lang_f1", lang_acc, lang_f1)
@@ -333,6 +432,8 @@ text_classifier.print_confusion_matrix(lang_confusion_dict_cmb, proposed_lang_la
 
 print()
 print()
+print()
+print()
 
 fam_acc_cmb, fam_f1_cmb, fam_confusion_dict_cmb = text_classifier.analyse_clsfr_results(fam_result_list_cmb)
 print("fam_acc_cmb, fam_f1_cmb", fam_acc_cmb, fam_f1_cmb)
@@ -346,3 +447,7 @@ print()
 print()
 print()
 print()
+
+lang_acc_ext, lang_f1_ext, lang_confusion_dict_ext = text_classifier.analyse_clsfr_results(lang_result_list_ext)
+print("lang_acc_ext, lang_f1_ext", lang_acc_ext, lang_f1_ext)
+text_classifier.print_confusion_matrix(lang_confusion_dict_ext, proposed_lang_label_list)

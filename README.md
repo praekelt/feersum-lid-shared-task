@@ -53,6 +53,8 @@ lang_ident_test.py is used to test the baseline and baseline+lexicon LID. The le
 
 `pip install scipy`
 
+`pip install requests`
+
 ### If you don't have virtualenv installed first run:
 `pip install virtualenv`
 

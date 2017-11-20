@@ -81,7 +81,7 @@ def add_predicted_lang_labels_ext(service: str,
             print(truth, prediction, sentence, flush=True)
             print()
 
-        if (sentence_num % int(sent_list_len / 500)) == 0:
+        if (sentence_num % 100) == 0:
             print(str(round(sentence_num / float(sent_list_len) * 100.0, 2)) + " ", flush=True)
             print("acc =", correct_ext / float(sentence_num))
             print()
@@ -197,7 +197,7 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
             print(prediction_cmb)
             print()
 
-        if (sentence_num % int(sent_list_len / 500)) == 0:
+        if (sentence_num % 100) == 0:
             print(str(round(sentence_num / float(sent_list_len) * 100.0, 2)) + " ", flush=True)
             print("acc =", correct_nb / float(sentence_num))
             print("acc_lex =", correct_lex / float(sentence_num))

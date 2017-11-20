@@ -324,54 +324,52 @@ def print_confusion_matrix(confusion_dict: Dict[str, Dict[str, List[str]]],
     Print the confusion matric. This method also serves as an example of how to use the sparse confusion matrix.
 
     :param confusion_dict: The sparse confusion matrix stored as a dict of dicts.
-    :param proposed_label_list: The proposed
+    :param proposed_label_list: The proposed order and subset of class labels to use.
     """
-    row_total_dict = {}  # type: Dict[str, int]
+    print()
+    print("label_list:", proposed_label_list)
+    print()
 
+    # Generate the proposed label list if none provided.
     if proposed_label_list is None:
         row_label_set = set()  # type: Set[str]
         column_label_set = set()  # type: Set[str]
 
         for row_label, row_dict in confusion_dict.items():
             row_label_set.add(row_label)
+
+            for column_label, _ in row_dict.items():
+                column_label_set.add(column_label)
+
+        proposed_label_list = list(row_label_set.union(column_label_set))
+        proposed_label_list.sort()
+
+    # Calculate the row and column totals.
+    row_total_dict = {}  # type: Dict[str, int]
+    column_total_dict = {}  # type: Dict[str, int]
+
+    for row_label, row_dict in confusion_dict.items():
+        if row_label in proposed_label_list:
             row_total = 0
 
             for column_label, cell in row_dict.items():
-                column_label_set.add(column_label)
-                row_total += len(cell)
+                if column_label in proposed_label_list:
+                    cell_len = len(cell)
+                    row_total += cell_len
+                    column_total = column_total_dict.get(column_label, 0) + cell_len
+                    column_total_dict[column_label] = column_total
 
             row_total_dict[row_label] = row_total
 
-        # print("row_label: ", row_label)
-        # print("match_label_set: ", match_label_set)
-        label_list = list(row_label_set.union(column_label_set))
-        label_list.sort()
-    else:
-        label_list = proposed_label_list
+    # Print the recall confusion matrix
+    print("===")
+    print("Recall Confusion Matrix:")
+    for row_label in proposed_label_list:
+        row_dict = confusion_dict.get(row_label, {})
 
-        for row_label, row_dict in confusion_dict.items():
-            if row_label in label_list:
-                row_total = 0
+        row_total = row_total_dict.get(row_label, 0)
 
-                for column_label, cell in row_dict.items():
-                    if column_label in label_list:
-                        row_total += len(cell)
-
-                row_total_dict[row_label] = row_total
-
-    print()
-    print("label_list:", label_list)
-
-    for row_label in label_list:
-        row_dict = confusion_dict.get(row_label)
-        if row_dict is None:
-            row_dict = {}
-
-        row_total = row_total_dict.get(row_label)
-        if row_total is None:
-            row_total = 0
-
-        for column_label in label_list:
+        for column_label in proposed_label_list:
             if row_total > 0:
                 cell = row_dict.get(column_label, [])
                 count = len(cell)
@@ -381,6 +379,29 @@ def print_confusion_matrix(confusion_dict: Dict[str, Dict[str, List[str]]],
                 print('--- \t', end='')
 
         print('\033[0m')
+    print("===")
+    print()
+
+    # Print the precision confusion matrix
+    print("===")
+    print("Precision Confusion Matrix:")
+    for row_label in proposed_label_list:
+        row_dict = confusion_dict.get(row_label, {})
+
+        for column_label in proposed_label_list:
+            column_total = column_total_dict.get(column_label, 0)
+
+            if column_total > 0:
+                cell = row_dict.get(column_label, [])
+                count = len(cell)
+                print('\033[%dm' % int(37.0 - round((count / column_total) * 7)), end='')
+                print(round(count / column_total, 3), "\t", end='')
+            else:
+                print('--- \t', end='')
+
+        print('\033[0m')
+    print("===")
+    print()
 
 
 def load_sentences(filename: str, label: str,

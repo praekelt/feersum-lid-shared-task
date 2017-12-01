@@ -121,6 +121,7 @@ def pred_language_lex(lang_token_dict: Dict[str, Dict[str, int]],
 def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
                               lang_token_dict: Dict[str, Dict[str, int]],
                               sent_list: List[Tuple[str, str]]) -> Tuple[List[Tuple[str, str, List[str]]],
+                                                                         List[Tuple[str, str, List[str]]],
                                                                          List[Tuple[str, str, List[str]]]]:
     """
     Add the predicted language labels to the sentences.
@@ -134,6 +135,7 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
     sentence_num = 0
 
     sent_list_pred_nb = []  # type: List[Tuple[str, str, List[str]]]
+    sent_list_pred_lex = []  # type: List[Tuple[str, str, List[str]]]
     sent_list_pred_cmb = []  # type: List[Tuple[str, str, List[str]]]
 
     correct_nb = 0
@@ -178,6 +180,7 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
             prediction_cmb = prediction_nb[0][0]
 
         sent_list_pred_nb.append((sentence, truth, [prediction_nb[0][0]]))
+        sent_list_pred_lex.append((sentence, truth, [prediction_lex[0][0]]))
         sent_list_pred_cmb.append((sentence, truth, [prediction_cmb]))
 
         if prediction_nb[0][0] == truth:
@@ -204,7 +207,7 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
             print("acc_cmb =", correct_cmb / float(sentence_num))
             print()
 
-    return sent_list_pred_nb, sent_list_pred_cmb
+    return sent_list_pred_nb, sent_list_pred_lex, sent_list_pred_cmb
 
 
 # ==========================
@@ -242,9 +245,9 @@ def find_unique(lang_token_dict: Dict[str, Dict[str, int]],
 def find_common(lang_token_dict: Dict[str, Dict[str, int]],
                 languages: Set[str]) -> Set[str]:
     """
-    Find the unique set of words in lang that are not in the neighbours.
+    Find the common set of words in languages.
     :param lang_token_dict: Language lexicon (word vs. count for each language.)
-    :param languages: The language to analyse.
+    :param languages: The languages to analyse.
     :return: The set of common words between languages.
     """
 
@@ -306,6 +309,7 @@ unique_zul = find_unique(lang_token_dict, 'zul', {'xho', 'ssw', 'nbl'})
 unique_xho = find_unique(lang_token_dict, 'xho', {'zul', 'ssw', 'nbl'})
 unique_ssw = find_unique(lang_token_dict, 'ssw', {'xho', 'zul', 'nbl'})
 unique_nbl = find_unique(lang_token_dict, 'nbl', {'xho', 'zul', 'ssw'})
+common_zul_xho = find_common(lang_token_dict, {'xho', 'zul'})
 common_nguni = find_common(lang_token_dict, {'nbl', 'xho', 'zul', 'ssw'})
 
 full_nso = find_unique(lang_token_dict, 'nso', set())
@@ -343,6 +347,7 @@ print('done. time = ' + str(end_time - start_time) + 's.')
 # lid_za_clean_240_3k typically implies training samples of avrg 240 chars in length and 3k=3000 samples per language!
 # ===
 text_clsfr_name = 'lid_za_clean_240_3k'
+# text_clsfr_name = 'lid_za_clean_240_4k'
 
 print("Loading the NB LID classifier", text_clsfr_name, "... ")
 start_time = time.time()
@@ -356,9 +361,12 @@ print()
 # ==========================
 print("Running LID on test data ... ")
 start_time = time.time()
-sent_list_pred, sent_list_pred_cmb = add_predicted_lang_labels(feat_clsfr, lang_token_dict, sent_list_test)
+sent_list_pred, sent_list_pred_lex, sent_list_pred_cmb = \
+    add_predicted_lang_labels(feat_clsfr, lang_token_dict, sent_list_test)
+
 end_time = time.time()
-print('done. Testing time = ' + str(end_time - start_time) + 's.')
+print('done. Testing time = ' + str(end_time - start_time) + 's.',
+      round(len(sent_list_test)/(end_time - start_time), 2), 'operations/s')
 print()
 
 # ==========================
@@ -389,15 +397,21 @@ print("Analysing LID test results ...")
 start_time = time.time()
 
 lang_result_list = []  # type: List[Tuple[str, str, List[str]]]
+lang_result_list_lex = []  # type: List[Tuple[str, str, List[str]]]
 lang_result_list_cmb = []  # type: List[Tuple[str, str, List[str]]]
 lang_result_list_ext = []  # type: List[Tuple[str, str, List[str]]]
 
 fam_result_list = []  # type: List[Tuple[str, str, List[str]]]
+fam_result_list_lex = []  # type: List[Tuple[str, str, List[str]]]
 fam_result_list_cmb = []  # type: List[Tuple[str, str, List[str]]]
 
 for sentence, truth, pred_list in sent_list_pred:
     lang_result_list.append((sentence, truth, pred_list))
     fam_result_list.append((sentence, lang_to_family_dict[truth], [lang_to_family_dict[pred_list[0]]]))
+
+for sentence, truth, pred_list in sent_list_pred_lex:
+    lang_result_list_lex.append((sentence, truth, pred_list))
+    fam_result_list_lex.append((sentence, lang_to_family_dict[truth], [lang_to_family_dict[pred_list[0]]]))
 
 for sentence, truth, pred_list in sent_list_pred_cmb:
     lang_result_list_cmb.append((sentence, truth, pred_list))
@@ -408,7 +422,9 @@ for sentence, truth, pred_list in sent_list_pred_ext:
 
 lang_acc, lang_f1, lang_confusion_dict = text_classifier.analyse_clsfr_results(lang_result_list)
 print("lang_acc, lang_f1", lang_acc, lang_f1)
-text_classifier.print_confusion_matrix(lang_confusion_dict, proposed_lang_label_list)
+text_classifier.print_confusion_matrix(lang_confusion_dict, proposed_lang_label_list, 'recall')
+text_classifier.print_confusion_matrix(lang_confusion_dict, proposed_lang_label_list, 'precision')
+text_classifier.print_confusion_matrix(lang_confusion_dict, proposed_lang_label_list, 'fscore')
 
 print()
 print()
@@ -419,19 +435,64 @@ text_classifier.print_confusion_matrix(fam_confusion_dict, ['germanic',
                                                             'nguni',
                                                             'sotho-tswana',
                                                             'tswa–ronga',
-                                                            'venda'])
+                                                            'venda'], 'recall')
+
+text_classifier.print_confusion_matrix(fam_confusion_dict, ['germanic',
+                                                            'nguni',
+                                                            'sotho-tswana',
+                                                            'tswa–ronga',
+                                                            'venda'], 'precision')
+
+text_classifier.print_confusion_matrix(fam_confusion_dict, ['germanic',
+                                                            'nguni',
+                                                            'sotho-tswana',
+                                                            'tswa–ronga',
+                                                            'venda'], 'fscore')
+print()
+print()
+print()
+print()
+
+
+lang_acc_lex, lang_f1_lex, lang_confusion_dict_lex = text_classifier.analyse_clsfr_results(lang_result_list_lex)
+print("lang_acc_lex, lang_f1_lex", lang_acc_lex, lang_f1_lex)
+text_classifier.print_confusion_matrix(lang_confusion_dict_lex, proposed_lang_label_list, 'recall')
+text_classifier.print_confusion_matrix(lang_confusion_dict_lex, proposed_lang_label_list, 'precision')
+text_classifier.print_confusion_matrix(lang_confusion_dict_lex, proposed_lang_label_list, 'fscore')
+
+print()
+print()
+
+fam_acc_lex, fam_f1_lex, fam_confusion_dict_lex = text_classifier.analyse_clsfr_results(fam_result_list_lex)
+print("fam_acc_lex, fam_f1_lex", fam_acc_lex, fam_f1_lex)
+text_classifier.print_confusion_matrix(fam_confusion_dict_lex, ['germanic',
+                                                                'nguni',
+                                                                'sotho-tswana',
+                                                                'tswa–ronga',
+                                                                'venda'], 'recall')
+text_classifier.print_confusion_matrix(fam_confusion_dict_lex, ['germanic',
+                                                                'nguni',
+                                                                'sotho-tswana',
+                                                                'tswa–ronga',
+                                                                'venda'], 'precision')
+text_classifier.print_confusion_matrix(fam_confusion_dict_lex, ['germanic',
+                                                                'nguni',
+                                                                'sotho-tswana',
+                                                                'tswa–ronga',
+                                                                'venda'], 'fscore')
 
 print()
 print()
 print()
 print()
+
 
 lang_acc_cmb, lang_f1_cmb, lang_confusion_dict_cmb = text_classifier.analyse_clsfr_results(lang_result_list_cmb)
 print("lang_acc_cmb, lang_f1_cmb", lang_acc_cmb, lang_f1_cmb)
-text_classifier.print_confusion_matrix(lang_confusion_dict_cmb, proposed_lang_label_list)
+text_classifier.print_confusion_matrix(lang_confusion_dict_cmb, proposed_lang_label_list, 'recall')
+text_classifier.print_confusion_matrix(lang_confusion_dict_cmb, proposed_lang_label_list, 'precision')
+text_classifier.print_confusion_matrix(lang_confusion_dict_cmb, proposed_lang_label_list, 'fscore')
 
-print()
-print()
 print()
 print()
 
@@ -441,7 +502,17 @@ text_classifier.print_confusion_matrix(fam_confusion_dict_cmb, ['germanic',
                                                                 'nguni',
                                                                 'sotho-tswana',
                                                                 'tswa–ronga',
-                                                                'venda'])
+                                                                'venda'], 'recall')
+text_classifier.print_confusion_matrix(fam_confusion_dict_cmb, ['germanic',
+                                                                'nguni',
+                                                                'sotho-tswana',
+                                                                'tswa–ronga',
+                                                                'venda'], 'precision')
+text_classifier.print_confusion_matrix(fam_confusion_dict_cmb, ['germanic',
+                                                                'nguni',
+                                                                'sotho-tswana',
+                                                                'tswa–ronga',
+                                                                'venda'], 'fscore')
 
 print()
 print()

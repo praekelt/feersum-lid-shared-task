@@ -319,12 +319,14 @@ def analyse_clsfr_results(result_list: List[Tuple[str, str, List[str]]]) -> \
 
 # ==========================
 def print_confusion_matrix(confusion_dict: Dict[str, Dict[str, List[str]]],
-                           proposed_label_list: List[str] = None) -> None:
+                           proposed_label_list: List[str] = None,
+                           matrix_type: str = None) -> None:
     """
     Print the confusion matric. This method also serves as an example of how to use the sparse confusion matrix.
 
     :param confusion_dict: The sparse confusion matrix stored as a dict of dicts.
     :param proposed_label_list: The proposed order and subset of class labels to use.
+    :param type: The type of matrix ('recall', 'precision', 'fscore'). Default is fscore.
     """
     print()
     print("label_list:", proposed_label_list)
@@ -361,41 +363,44 @@ def print_confusion_matrix(confusion_dict: Dict[str, Dict[str, List[str]]],
 
             row_total_dict[row_label] = row_total
 
-    # Print the recall confusion matrix
+    # Print the confusion matrix
     print("===")
-    print("Recall Confusion Matrix:")
+    print("Confusion Matrix:", matrix_type)
     for row_label in proposed_label_list:
         row_dict = confusion_dict.get(row_label, {})
-
         row_total = row_total_dict.get(row_label, 0)
-
-        for column_label in proposed_label_list:
-            if row_total > 0:
-                cell = row_dict.get(column_label, [])
-                count = len(cell)
-                print('\033[%dm' % int(37.0 - round((count / row_total) * 7)), end='')
-                print(round(count / row_total, 3), "\t", end='')
-            else:
-                print('--- \t', end='')
-
-        print('\033[0m')
-    print("===")
-    print()
-
-    # Print the precision confusion matrix
-    print("===")
-    print("Precision Confusion Matrix:")
-    for row_label in proposed_label_list:
-        row_dict = confusion_dict.get(row_label, {})
 
         for column_label in proposed_label_list:
             column_total = column_total_dict.get(column_label, 0)
 
-            if column_total > 0:
+            if (row_total > 0) or (column_total > 0):
                 cell = row_dict.get(column_label, [])
                 count = len(cell)
-                print('\033[%dm' % int(37.0 - round((count / column_total) * 7)), end='')
-                print(round(count / column_total, 3), "\t", end='')
+
+                if row_total > 0:
+                    recall = count / row_total
+                else:
+                    recall = 0.0
+
+                if column_total > 0:
+                    precision = count / column_total
+                else:
+                    precision = 0.0
+
+                if (precision + recall) > 0.0:
+                    fscore = 2.0 * (precision * recall) / (precision + recall)
+                else:
+                    fscore = 0.0
+
+                if matrix_type == 'recall':
+                    cell_value = recall
+                elif matrix_type == 'precision':
+                    cell_value = precision
+                else:
+                    cell_value = fscore
+
+                print('\033[%dm' % int(37.0 - round(cell_value * 7)), end='')
+                print(round(cell_value, 3), "\t", end='')
             else:
                 print('--- \t', end='')
 

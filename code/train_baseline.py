@@ -78,6 +78,7 @@ min_requested_sent_length = 300  # value used to truncate the text samples.
 # text_clsfr_name = "lid_za_clean_200_2k"  # 0.9997
 # text_clsfr_name = "lid_za_clean_200_3k"  # 0.9996
 # text_clsfr_name = "lid_za_clean_240_1k"  # 0.9998
+# text_clsfr_name = "lid_za_clean_240_3k_4gram"  # 0.9998
 # text_clsfr_name = "lid_za_clean_240_2k"  # 1.0000
 text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
 # text_clsfr_name = "lid_za_clean_240_4k"  # 1.0
@@ -117,7 +118,8 @@ print("Running LID on test data ... ")
 start_time = time.time()
 sent_list_pred = add_predicted_lang_labels(feat_clsfr, sent_list_test)
 end_time = time.time()
-print('done. Testing time = ' + str(end_time - start_time) + 's.')
+print('done. Testing time = ' + str(end_time - start_time) + 's.',
+      round(len(sent_list_test)/(end_time - start_time), 2), 'operations/s')
 print()
 
 # ==========================

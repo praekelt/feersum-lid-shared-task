@@ -84,6 +84,9 @@ feature_extractor_registry = {'CHAR_BIGRAMS': _extract_char_bigram_features,
                               'CHAR_5GRAMS': _extract_char_5gram_features,
                               'CHAR_6GRAMS': _extract_char_6gram_features}
 
+# Note: generate a histogram of text features and use it to remove the most frequent or least frequent text features.
+# Can one detect which text features are less significant in the classification.
+
 
 def _cnvrt_text_to_features(list_text: List[Tuple[str, str]],
                             text_feature_extractor: Callable) -> List[Tuple[Set[str], str]]:

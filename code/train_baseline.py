@@ -62,8 +62,8 @@ language_set = {'afr': '../data/afr/improved_afr.txt',
                 'ven': '../data/ven/improved_ven.txt',
                 'tso': '../data/tso/improved_tso.txt'}
 
-training_samples = 3000
-testing_samples = 1000
+training_samples = 4000
+testing_samples = 100
 
 min_requested_sent_length = 300  # value used to truncate the text samples.
 
@@ -80,8 +80,8 @@ min_requested_sent_length = 300  # value used to truncate the text samples.
 # text_clsfr_name = "lid_za_clean_240_1k"  # 0.9998
 # text_clsfr_name = "lid_za_clean_240_3k_4gram"  # 0.9998
 # text_clsfr_name = "lid_za_clean_240_2k"  # 1.0000
-text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
-# text_clsfr_name = "lid_za_clean_240_4k"  # 1.0
+# text_clsfr_name = "lid_za_clean_240_3k"  # 0.9999
+text_clsfr_name = "lid_za_clean_240_4k"  # 1.0
 
 # text_clsfr_name = "lid_za_clean_240_4k_4gram"
 # text_clsfr_name = "lid_za_clean_240_4k_6gram"

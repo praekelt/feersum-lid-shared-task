@@ -346,8 +346,8 @@ print('done. time = ' + str(end_time - start_time) + 's.')
 # Note: Clsfr name convention for baseline long sentence trained classifier is:
 # lid_za_clean_240_3k typically implies training samples of avrg 240 chars in length and 3k=3000 samples per language!
 # ===
-text_clsfr_name = 'lid_za_clean_240_3k'
-# text_clsfr_name = 'lid_za_clean_240_4k'
+# text_clsfr_name = 'lid_za_clean_240_3k'
+text_clsfr_name = 'lid_za_clean_240_4k'
 
 print("Loading the NB LID classifier", text_clsfr_name, "... ")
 start_time = time.time()

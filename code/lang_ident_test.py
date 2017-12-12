@@ -58,42 +58,60 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
     correct_cmb = 0
 
     for sentence, truth in sent_list:
+        # Get the naive Bayes LID prediction.
         prediction_nb = text_classifier.retrieve_text_class(feat_clsfr, sentence)
+
+        # Get the lexicon based LID prediction.
         prediction_lex = pred_language_lex(lang_token_dict, sentence)
 
         if (prediction_nb[0][0] == 'xho') or (prediction_nb[0][0] == 'zul') or \
                 (prediction_nb[0][0] == 'ssw') or (prediction_nb[0][0] == 'nbl'):
+            # ======================================================================== #
+            # === If naive Bayes predicts the language to be from the Nguni family === #
             lang_list = ['zul', 'xho', 'nbl', 'ssw']
 
             scored_lang_list = []  # type: List[Tuple[str, float]]
 
+            # Filter the lexicon LID result to just contain languages of this family.
             for lang, score in prediction_lex:
                 if lang in lang_list:
                     scored_lang_list.append((lang, score))
 
+            # Sort lexicon LID results.
             scored_lang_list.sort(key=lambda scored_label: scored_label[1], reverse=True)
 
+            # If the Lexicon LID result has a high confidence then use it, else use the naive Bayesian result.
             if scored_lang_list[0][1] > scored_lang_list[1][1]:
                 prediction_cmb = scored_lang_list[0][0]
             else:
                 prediction_cmb = prediction_nb[0][0]
         elif (prediction_nb[0][0] == 'nso') or (prediction_nb[0][0] == 'sot') or (prediction_nb[0][0] == 'tsn'):
+            # ==================================================================================== #
+            # === Else if naive Bayes predicts the language to be from the Sotho-Tswana family === #
             lang_list = ['nso', 'sot', 'tsn']
 
             scored_lang_list = []  # type: List[Tuple[str, float]]
 
+            # Filter the lexicon LID result to just contain languages of this family.
             for lang, score in prediction_lex:
                 if lang in lang_list:
                     scored_lang_list.append((lang, score))
 
+            # Sort lexicon LID results.
             scored_lang_list.sort(key=lambda scored_label: scored_label[1], reverse=True)
+
+            # If the Lexicon LID result has a high confidence then use it, else use the naive Bayesian result.
             if scored_lang_list[0][1] > scored_lang_list[1][1]:
                 prediction_cmb = scored_lang_list[0][0]
             else:
                 prediction_cmb = prediction_nb[0][0]
         else:
+            # ========================================================================== #
+            # === Else just use the naive Bayesian result for the remaining families === #
             prediction_cmb = prediction_nb[0][0]
 
+        # ========================================
+        # === Record the predictions and stats ===
         sent_list_pred_nb.append((sentence, truth, [prediction_nb[0][0]]))
         sent_list_pred_lex.append((sentence, truth, [prediction_lex[0][0]]))
         sent_list_pred_cmb.append((sentence, truth, [prediction_cmb]))
@@ -180,7 +198,9 @@ def find_common(lang_token_dict: Dict[str, Dict[str, int]],
     return common_tokens
 
 
-# ==========================
+# ======================================================================
+# === Testing script starts here =======================================
+# ======================================================================
 print("Loading the text corpora...")
 start_time = time.time()
 language_set = {'afr': '../data/afr/improved_afr.txt',
@@ -282,7 +302,7 @@ sent_list_pred, sent_list_pred_lex, sent_list_pred_cmb = \
 
 end_time = time.time()
 print('done. Testing time = ' + str(end_time - start_time) + 's.',
-      round(len(sent_list_test)/(end_time - start_time), 2), 'operations/s')
+      round(len(sent_list_test) / (end_time - start_time), 2), 'operations/s')
 print()
 
 lang_to_family_dict = {'afr': 'germanic',
@@ -355,7 +375,6 @@ print()
 print()
 print()
 
-
 lang_acc_lex, lang_f1_lex, lang_confusion_dict_lex = text_classifier.analyse_clsfr_results(lang_result_list_lex)
 print("lang_acc_lex, lang_f1_lex", lang_acc_lex, lang_f1_lex)
 text_classifier.print_confusion_matrix(lang_confusion_dict_lex, proposed_lang_label_list, 'recall')
@@ -387,7 +406,6 @@ print()
 print()
 print()
 print()
-
 
 lang_acc_cmb, lang_f1_cmb, lang_confusion_dict_cmb = text_classifier.analyse_clsfr_results(lang_result_list_cmb)
 print("lang_acc_cmb, lang_f1_cmb", lang_acc_cmb, lang_f1_cmb)

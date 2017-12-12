@@ -36,7 +36,9 @@ def add_predicted_lang_labels(feat_clsfr: text_classifier.FeatClsfr,
     return sent_list_pred
 
 
-# ==========================
+# =======================================================================
+# === Training script starts here =======================================
+# =======================================================================
 print("Loading the text corpora...")
 start_time = time.time()
 # language_set = {'afr': '../data/afr/original_NCHLT_afr_CLEAN.2.0.txt',

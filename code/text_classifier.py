@@ -510,5 +510,3 @@ def save_samples_csv(sample_list: List[Tuple[str, str]],
     except IOError:
         print("save_samples_csv save error!")
         return False
-
-

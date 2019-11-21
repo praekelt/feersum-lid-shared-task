@@ -13,10 +13,10 @@ B. Duvenhage, "Short Text Language Identification for Under Resourced Languages,
 
 
 ## The Data
-The data is from the NHCLT Text Corpera collected by South African Department of Arts and Culture & Centre for Text Technology (CTexT,
+The texts in the 'data' folder is from the NCHLT Text Corpora collected by South African Department of Arts and Culture & Centre for Text Technology (CTexT,
 North-West University, South Africa). Each folder in the data contains the original and improved text corpora for a single language.
 
-The corpora is improved from the original version as explained in the 2017 paper. The data was cleaned and incorrectly labelled samples were
+The corpora is improved from the original version as explained in the 2017 paper. The data was manually inspected and incorrectly labelled samples were
 relabelled. Folder lid_task_2017a contains example labelled training and testing sets with a 3000:1000 split and full sentence lengths between
 200 and 300 characters are given in train_full_3k.csv and test_full_1k.csv An example test set with truncated text length of approximately
 15 characters is given in test_15_1k.csv. The sample files have one header line and the format is lang_id, text.
@@ -30,7 +30,7 @@ Run 'jupyter notebook', open the NeurIPS notebook and run all the cells.
 ### 'code' folder:
 train_baseline.py is required to train the baseline Naive Bayesian LID classifier for the 2017 paper.
 
-lang_ident_test.py is used to test the baseline and baseline+lexicon LID. The lexicon is derived from the improved NHCLT Text Corpera.
+lang_ident_test.py is used to test the baseline and baseline+lexicon LID. The lexicon is derived from the improved NCHLT Text Corpora.
 
 To run the code to train the baseline classifier: `cd code` & `python train_baseline.py`
 

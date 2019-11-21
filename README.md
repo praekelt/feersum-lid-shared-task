@@ -1,5 +1,5 @@
 # feersum-lid-shared-task
-This git repository hosts the data and code that accompanies papers 'Improved Text Language Identification for the South African Languages'
+This git repository hosts the data and code that accompanies 'Improved Text Language Identification for the South African Languages'
 published at the Prasa/RobMech 2017 conference as well as 'Short Text Language Identification for Under Resourced Languages' published at NeurIPS 2019 ML4D workshop.
 
 The papers are on text language identification of short pieces of text of around 15 characters. Hopefully this repo can be useful to create a text language identification shared task for South African languages. Example training and testing data used in the 2017 paper is in the folder lid_task_2017a.
